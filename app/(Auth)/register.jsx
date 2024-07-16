@@ -1,71 +1,105 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Overlay } from 'react-native-elements';
+import { Link } from '@react-navigation/native';
 import FormField from '../../components/FormField';
 import CustomButton from '../../components/CustomButton';
-import { Link } from 'expo-router';
+import axios from 'axios';
 
 const Register = () => {
   const [form, setForm] = useState({
+    username: '',
     email: '',
     password: ''
   });
-
-  const submit = () => {
-    // Handle form submission logic
-  };
-
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorVisible, setErrorVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const submit = async () => {
+    console.log('Form:', form);
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await axios.post('http://localhost:8080/user/register', {
+        email: form.email,
+        username: form.username,
+        password: form.password,
+      });
+      if (response.status === 201) {
+        router.push('/Profile');
+      } else {
+        setErrorMessage('Registration failed. Please try again.');
+        setErrorVisible(true);
+      }
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || 'An error occurred. Please try again.');
+      setErrorVisible(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <GestureHandlerRootView>
-      <ScrollView contentContainerStyle={styles.scrollView}>
-        <View style={styles.content}>
-          <Text style={styles.heading}>Ready? Are you!</Text>
-          <Text style={styles.headingText}>Connexus: Your one-stop app for news, events, and campus life.</Text>
+        <ScrollView contentContainerStyle={styles.scrollView}>
+          <View style={styles.content}>
+            <Text style={styles.heading}>Ready! Are you?</Text>
+            <Text style={styles.headingText}>
+              Connexus: Your one-stop app for news, events, and campus life.
+            </Text>
 
-          <FormField
-            value={form.name}
-            handleChangeText={(text) => setForm({ ...form, name: text })}
-            placeholder="Enter your name"
-            otherStyles={styles.input}
-          />
+        
+            <FormField
+              value={form.username}
+              handleChangeText={(text) => setForm({ ...form, username: text })}
+              placeholder="Enter your username"
+              otherStyles={styles.input}
+            />
+            <FormField
+              value={form.email}
+              handleChangeText={(text) => setForm({ ...form, email: text })}
+              placeholder="Enter your email"
+              otherStyles={styles.input}
+              keyboardType="email-address"
+            />
+            <FormField
+              value={form.password}
+              handleChangeText={(text) => setForm({ ...form, password: text })}
+              placeholder="Enter your password"
+              otherStyles={styles.input}
+              secureTextEntry
+            />
 
-          <FormField
-            value={form.email}
-            handleChangeText={(text) => setForm({ ...form, email: text })}
-            placeholder="Enter your email"
-            otherStyles={styles.input}
-            keyboardType="email-address"
-          />
+            {errorVisible && <Text style={styles.errorText}>{errorMessage}</Text>}
+            <CustomButton
+              handlePress={submit}
+              containerStyles={styles.button}
+              isLoading={isSubmitting}
+              title="Sign Up"
+            />
 
-          <FormField
-            value={form.password}
-            handleChangeText={(text) => setForm({ ...form, password: text })}
-            placeholder="Enter your password"
-            otherStyles={styles.input}
-            secureTextEntry
-          />
+            <Text style={styles.middleText}>Already have an account?</Text>
+            <Link to="/login" style={styles.linkText}>
+              <Text>Log In</Text>
+            </Link>
 
-          <CustomButton
-            title="Sign Up"
-            handlePress={submit}
-            containerStyles={styles.button}
-            isLoading={isSubmitting}
-          />
+            <Text style={styles.middleText}>
+              By clicking sign up, you agree to our Terms of Service and Privacy Policy
+            </Text>
 
-          <Text style={styles.middleText}>Already have an account?</Text>
-
-          <Link href="/login" style={styles.linkText}><Text>Log In</Text></Link>
-
-          <Text style={styles.middleText}>By clicking sign up, you agree to our Terms of Service and Privacy Policy</Text>
-
-          <Text style={styles.footer}>Connexus</Text>
-        </View>
-      </ScrollView>
+            <Text style={styles.footer}>Connexus</Text>
+          </View>
+        </ScrollView>
       </GestureHandlerRootView>
+
+      <Overlay isVisible={errorVisible} onBackdropPress={() => setErrorVisible(false)}>
+        <Text>{errorMessage}</Text>
+      </Overlay>
     </SafeAreaView>
   );
 };
@@ -129,11 +163,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textDecorationLine: 'underline',
   },
-
   footer: {
     marginTop: 20,
     fontSize: 60,
     fontWeight: 'bold',
+  },
+  errorText: {
+    color: 'red',
   },
 });
 
