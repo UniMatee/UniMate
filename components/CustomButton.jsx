@@ -3,7 +3,12 @@ import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-nat
 
 const CustomButton = ({ handlePress, containerStyles, textStyles, isLoading, children, title }) => {
   return (
-    <TouchableOpacity onPress={handlePress} activeOpacity={0.7} style={[styles.button, containerStyles]} disabled={isLoading}>
+    <TouchableOpacity
+      onPress={handlePress}
+      activeOpacity={0.7}
+      style={[styles.button, containerStyles]}
+      disabled={isLoading}
+    >
       {isLoading ? (
         <ActivityIndicator size="small" color="white" />
       ) : (
