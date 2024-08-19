@@ -1,6 +1,6 @@
 const User = require('../Models/UserModel');
 const bcrypt = require('bcrypt');
-// const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 exports.registerUser = async (req, res) => {
     try {
@@ -37,9 +37,13 @@ exports.loginUser = async (req, res) => {
             return res.status(400).json({ message: "Invalid password" });
         }
 
-        // const token = jwt.sign({ userId: validUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: validUser._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
-        res.send({ message: "Login successful", success: true });
+        res.send({ 
+            message: "Login successful", 
+            success: true, 
+            token: token
+        });
     } catch (error) {
         res.status(500).json({ message: "Unable to login user", error: error.message });
     }
@@ -51,5 +55,17 @@ exports.getAllUsers = async (req, res) => {
         res.status(200).json(users);
     } catch (error) {
         res.status(500).json({ message: "Unable to retrieve users", error: error.message });
+    }
+};
+
+exports.getUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Unable to retrieve user", error: error.message });
     }
 };
