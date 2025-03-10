@@ -1,127 +1,85 @@
-import React, { useState, useEffect } from "react";
-import { ScrollView, Text, View, StatusBar, Image, Animated, Easing } from "react-native";
+import React from "react";
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity, StatusBar } from "react-native";
+import { Link } from 'expo-router';
 import { SafeAreaView } from "react-native-safe-area-context";
-import indexStyles from "../app/indexStyles";
+import CustomButton from "../components/CustomButton"; 
 
-const logoImage = require('../assets/icons/newlogo1.png');
-
-const Page = () => {
-  const [loading, setLoading] = useState(true);
-  const progress = new Animated.Value(0);
-  const [titleAnimation] = useState(new Animated.Value(0)); 
-  const [subtitleAnimation] = useState(new Animated.Value(0));
-
-  useEffect(() => {
-    animateProgressBar();
-    animateImage();
-    animateText(); 
-    const timeout = setTimeout(() => {
-      setLoading(true); 
-    }, 3000);
-
-    return () => {
-      clearTimeout(timeout); 
-      progress.setValue(0); 
-    };
-  }, []);
-
-  const animateImage = () => {
-    Animated.timing(progress, {
-      toValue: 1,
-      duration: 2000, 
-      easing: Easing.ease, 
-      useNativeDriver: false,
-    }).start();
-  }
-  const imageStyle = {
-    opacity : progress,
-    transform: [
-      {
-        scale: progress.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0.5, 1],
-        }),
-      },
-    ],
-  };
-
-  const animateText = () => {
-    Animated.parallel([
-      Animated.timing(titleAnimation, {
-        toValue: 1,
-        duration: 1000,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.timing(subtitleAnimation, {
-        toValue: 1,
-        duration: 1000,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
-
-  const animateProgressBar = () => {
-    Animated.timing(progress, {
-      toValue: 1,
-      duration: 3000, 
-      easing: Easing.linear, 
-      useNativeDriver: false,
-    }).start();
-  };
-  const titleStyle = {
-    opacity: titleAnimation,
-    transform: [
-      {
-        translateX: titleAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [-100, 0],
-        }),
-      },
-    ],
-  };
-
-  const subtitleStyle = {
-    opacity: subtitleAnimation,
-    transform: [
-      {
-        translateX: subtitleAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [-100, 0],
-        }),
-      },
-    ],
-  };
-
-  const interpolatedWidth = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0%", "100%"],
-  });
-
+export default function Page() {
+  
   return (
+    <SafeAreaView style={{height: "100%" }}>
+      <ScrollView contentContainerStyle={{height:'100%'}}>
 
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ flex: 1 }}>
-        <View style={indexStyles.container}>
-          <View style={indexStyles.main}>
-          <Animated.Image style={[indexStyles.image, imageStyle]} source={logoImage} />
+        <View style={styles.container}>
+          <View style={styles.main}>
+            <Text style={styles.title}>Connexus</Text> 
 
-          <Animated.Text style={[indexStyles.title, titleStyle]}>UNIMATE</Animated.Text>
-            <Animated.Text style={[indexStyles.subtitle, subtitleStyle]}>Your campus in one app!</Animated.Text>
+            <Text style={styles.subtitle}>
+              Your all-in-one app for campus news, lost and found, events, and more.
+            </Text>
+            <Link href="/login" style={styles.button}>
+              <Text style={styles.buttonText}>Lets Get Started</Text>
+            </Link>
+
           
-            {/* Loader */}
-            {loading && (
-              <View style={indexStyles.loaderContainer}>
-                <Animated.View style={[indexStyles.loaderBar, { width: interpolatedWidth }]} />
-              </View>
-            )}
+            {/* <CustomButton
+              handlePress={() => { } }
+              containerStyles={styles.containerStyles} textStyles={undefined} isLoading={undefined}            
+              /> */}
+
+
           </View>
         </View>
-      </ScrollView>
+       </ScrollView> 
+
       <StatusBar />
     </SafeAreaView>
   );
-};
+}
 
-export default Page;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    padding: 24,
+    backgroundColor: "beige",
+  },
+  main: {
+    flex: 1,
+    justifyContent: "center",
+    maxWidth: 960,
+    marginHorizontal: "auto",
+    alignItems: "center", 
+  },
+  title: {
+    fontSize: 64,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    fontSize: 36,
+    color: "#38434D",
+    textAlign: "center",
+    marginTop: 24,
+    marginBottom: 24,
+  },
+  button: {
+    backgroundColor: "black",
+    padding: 14,
+    borderRadius: 8,
+    marginTop: 24,
+    minWidth: 180, 
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
+    alignContent: "center",
+  },
+  containerStyles: {
+    backgroundColor: "black",
+    padding: 14,
+    borderRadius: 8,
+    marginTop: 24,
+    minWidth: 180, 
+  },
+});

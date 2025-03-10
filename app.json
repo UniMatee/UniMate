@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "ConnexusV0",
-    "slug": "ConnexusV0",
+    "name": "ConnexusV1",
+    "slug": "ConnexusV1",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "ConnexusV0",
+    "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
